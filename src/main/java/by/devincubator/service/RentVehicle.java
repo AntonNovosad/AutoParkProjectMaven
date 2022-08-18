@@ -1,7 +1,6 @@
 package by.devincubator.service;
 
 import by.devincubator.exception.DefectedVehicleException;
-import by.devincubator.service.MechanicService;
 import by.devincubator.vehicle.Rent;
 import by.devincubator.vehicle.Vehicle;
 

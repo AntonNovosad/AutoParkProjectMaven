@@ -1,23 +1,29 @@
 package by.devincubator.service;
 
+import by.devincubator.infrastructure.core.annotations.Autowired;
+import by.devincubator.parser.ParserBreakingFromFile;
+import by.devincubator.utils.ReadFile;
 import by.devincubator.utils.WriteFile;
 import by.devincubator.vehicle.Vehicle;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MechanicService implements Fixer {
-    private static String[] details = {"Фильтр", "Втулка", "Вал", "Ось", "Свечка", "Масло", "ГРМ", "ШРУС"};
     private static final String PATH_ORDERS_FILE = "./src/main/resources/data/orders.csv";
     private static final int MIN_NUMBER_OF_BROKEN = 0;
     private static final int MAX_NUMBER_OF_BROKEN = 4;
     private static final int MIN_NUMBER_OF_DETAILS = 1;
     private static final int MAX_NUMBER_OF_DETAILS = 3;
     private static final String REGEX = ".+";
+    private static String[] details = {"Фильтр", "Втулка", "Вал", "Ось", "Свечка", "Масло", "ГРМ", "ШРУС"};
+    @Autowired
+    private ParserBreakingFromFile parser;
+
+    public void setParser(ParserBreakingFromFile parser) {
+        this.parser = parser;
+    }
 
     @Override
     public Map<String, Integer> detectBreaking(Vehicle vehicle) {
@@ -32,7 +38,7 @@ public class MechanicService implements Fixer {
 
     @Override
     public void repair(Vehicle vehicle) {
-        List<String> list = readFile(PATH_ORDERS_FILE);
+        List<String> list = parser.loadOrderList();
         if (isBroken(vehicle)) {
             list.removeIf(i -> i.matches(vehicle.getId() + REGEX));
         }
@@ -41,7 +47,7 @@ public class MechanicService implements Fixer {
 
     @Override
     public boolean isBroken(Vehicle vehicle) {
-        List<String> list = readFile(PATH_ORDERS_FILE);
+        List<String> list = parser.loadOrderList();
         for (String str : list) {
             if (str.matches(vehicle.getId() + REGEX)) {
                 return true;
@@ -70,16 +76,6 @@ public class MechanicService implements Fixer {
         return line;
     }
 
-    private static List<String> readFile(String inFile) {
-        List<String> list = null;
-        try {
-            list = Files.readAllLines(Paths.get(inFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
     private static int getRandomInteger(int min, int max) {
         return (int) (Math.random() * ((max - min) + 1) + min);
     }
@@ -93,7 +89,7 @@ public class MechanicService implements Fixer {
     }
 
     public void showVehicleWithMaxBrokenDetails(List<Vehicle> listVehicle) {
-        List<String> list = readFile(PATH_ORDERS_FILE);
+        List<String> list = parser.loadOrderList();
         int max = findMaxNumberBrokenDetails();
         System.out.println("Vehicle with max broken details:");
         list.forEach(s -> {
@@ -107,7 +103,7 @@ public class MechanicService implements Fixer {
     }
 
     private int findMaxNumberBrokenDetails() {
-        List<String> list = readFile(PATH_ORDERS_FILE);
+        List<String> list = parser.loadOrderList();
         int max = 0;
         for (String str : list) {
             if (max < findNumberBrokenDetails(str)) {
@@ -129,7 +125,7 @@ public class MechanicService implements Fixer {
     }
 
     public static int getDefectCount(Vehicle vehicle) {
-        List<String> list = readFile(PATH_ORDERS_FILE);
+        List<String> list = ReadFile.readFile(PATH_ORDERS_FILE);
         int numberOfDetail = 0;
         for (String str : list) {
             if (str.matches(vehicle.getId() + REGEX)) {

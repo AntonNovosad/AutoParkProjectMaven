@@ -1,68 +1,58 @@
 package by.devincubator.vehicle.collection;
 
+import by.devincubator.infrastructure.core.annotations.Autowired;
+import by.devincubator.infrastructure.core.annotations.InitMethod;
+import by.devincubator.parser.ParserVehicleFromFile;
 import by.devincubator.service.MechanicService;
-import by.devincubator.utils.ReadFile;
-import by.devincubator.vehicle.*;
+import by.devincubator.vehicle.Column;
+import by.devincubator.vehicle.Vehicle;
+import by.devincubator.vehicle.VehicleType;
 import by.devincubator.vehicle.comparator.ComparatorByDefectCount;
 import by.devincubator.vehicle.comparator.ComparatorByTaxPerMonth;
-import by.devincubator.vehicle.engine.AbstractEngine;
-import by.devincubator.vehicle.engine.DieselEngine;
-import by.devincubator.vehicle.engine.ElectricalEngine;
-import by.devincubator.vehicle.engine.GasolineEngine;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class VehicleCollection {
-    private static final String SEPARATOR_FOR_SPLIT = ",";
-    private static final String REGEX_TO_FIND_DOUBLE = "(\")(\\d+)(,)(\\d+)(\")";
-    private static final String GASOLINE_ENGINE = "Gasoline";
-    private static final String ELECTRICAL_ENGINE = "Electrical";
-
-    private List<VehicleType> vehicleTypeList;
-    private List<Vehicle> vehicleList;
-    private List<Rent> rentList;
+    private List<VehicleType> vehicleTypes = new ArrayList<>();
+    private List<Vehicle> vehicleList = new ArrayList<>();
+    @Autowired
+    private ParserVehicleFromFile parser;
 
     public VehicleCollection() {
     }
 
-    public VehicleCollection(String vehicleType, String vehicle, String rent) {
-        rentList = loadRents(rent);
-        vehicleTypeList = loadTypes(vehicleType);
-        vehicleList = loadVehicles(vehicle);
+    @InitMethod
+    public void init() {
+        vehicleTypes = parser.getVehicleTypeList();
+        vehicleList = parser.getVehicleList();
     }
 
-    public List<VehicleType> loadTypes(String inFile) {
-        List<String> list = ReadFile.readFile(inFile);
-        List<VehicleType> listVehicleType = new ArrayList<>();
-        for (String s : list) {
-            listVehicleType.add(createType(s));
-        }
-        return listVehicleType;
+    public List<VehicleType> getVehicleTypes() {
+        return vehicleTypes;
     }
 
-    public List<Rent> loadRents(String inFile) {
-        List<String> list = ReadFile.readFile(inFile);
-        List<Rent> listRent = new ArrayList<>();
-        for (String s : list) {
-            listRent.add(createRent(s));
-        }
-        return listRent;
+    public void setVehicleTypes(List<VehicleType> vehicleTypes) {
+        this.vehicleTypes = vehicleTypes;
     }
 
-    public List<Vehicle> loadVehicles(String inFile) {
-        List<String> list = ReadFile.readFile(inFile);
-        List<Vehicle> listVehicle = new ArrayList<>();
-        for (String s : list) {
-            listVehicle.add(createVehicle(s));
-        }
-        return listVehicle;
+    public void setVehicleList(List<Vehicle> vehicleList) {
+        this.vehicleList = vehicleList;
     }
 
-    public List<Vehicle> getListBrokenVehicle(MechanicService mechanicService, String fileName) {
-        return loadVehicles(fileName)
+    public ParserVehicleFromFile getParser() {
+        return parser;
+    }
+
+    public void setParser(ParserVehicleFromFile parser) {
+        this.parser = parser;
+    }
+
+    public List<Vehicle> getListBrokenVehicle(MechanicService mechanicService) {
+        return vehicleList
                 .stream()
                 .filter(x -> !mechanicService.detectBreaking(x).isEmpty())
                 .collect(Collectors.toList());
@@ -75,52 +65,11 @@ public class VehicleCollection {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Vehicle> getVehicleWithMaxTas(String path) {
-        return Optional.of(loadVehicles(path)
+    public Optional<Vehicle> getVehicleWithMaxTas() {
+        return Optional.of(vehicleList
                 .stream()
                 .max(new ComparatorByTaxPerMonth())
                 .get());
-    }
-
-    private VehicleType createType(String csvString) {
-        VehicleType vehicleType = new VehicleType();
-        String[] array = createArrayString(csvString);
-        vehicleType.setId(Integer.parseInt(array[0]));
-        vehicleType.setName(array[1]);
-        vehicleType.setTaxCoefficient(Double.parseDouble(array[2]));
-        return vehicleType;
-    }
-
-    private Rent createRent(String csvString) {
-        Rent rent = new Rent();
-        String[] array = createArrayString(csvString);
-        rent.setVehicleId(Integer.parseInt(array[0]));
-        rent.setDate(createDate(array[1]));
-        rent.setPrice(Double.parseDouble(array[array.length - 1]));
-        return rent;
-    }
-
-    private Vehicle createVehicle(String csvString) {
-        Vehicle vehicle = new Vehicle();
-        String[] array = createArrayString(csvString);
-        vehicle.setId(Integer.parseInt(array[0]));
-        vehicle.setType(vehicleTypeList.get(Integer.parseInt(array[1]) - 1));
-        vehicle.setModelName(array[2]);
-        vehicle.setRegistrationNumber(array[3]);
-        vehicle.setWeightKg(Integer.parseInt(array[4]));
-        vehicle.setManufactureYear(Integer.parseInt(array[5]));
-        vehicle.setMileage(Integer.parseInt(array[6]));
-        vehicle.setColor(Color.valueOf(array[7].toUpperCase()));
-        vehicle.setEngine(
-                createEngine(
-                        array[8],
-                        Double.parseDouble(array[9]),
-                        Double.parseDouble(array[10]),
-                        Double.parseDouble(array[array.length - 1])
-                )
-        );
-        vehicle.setRentList(createRentListForVehicleId(rentList, vehicle.getId()));
-        return vehicle;
     }
 
     public void insert(int index, Vehicle v) {
@@ -184,48 +133,6 @@ public class VehicleCollection {
                     v.getTotalProfit());
         }
         System.out.printf(Column.TOTAL.getName() + ": %.2f\n", sumTotalProfit());
-    }
-
-    private String[] createArrayString(String line) {
-        String newLine = replaceString(line);
-        return newLine.split(SEPARATOR_FOR_SPLIT);
-    }
-
-    private String replaceString(String str) {
-        String regex = REGEX_TO_FIND_DOUBLE;
-        return str.replaceAll(regex, "$2" + "." + "$4");
-    }
-
-    private Date createDate(String date) {
-        SimpleDateFormat format = new SimpleDateFormat();
-        format.applyPattern("dd.MM.yyyy");
-        Date docDate = null;
-        try {
-            docDate = format.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return docDate;
-    }
-
-    private AbstractEngine createEngine(String name, double engineCapacity, double fuel100, double fuelTank) {
-        if (name.equals(GASOLINE_ENGINE)) {
-            return new GasolineEngine(engineCapacity, fuelTank, fuel100);
-        } else if (name.equals(ELECTRICAL_ENGINE)) {
-            return new ElectricalEngine(engineCapacity, fuel100);
-        } else {
-            return new DieselEngine(engineCapacity, fuelTank, fuel100);
-        }
-    }
-
-    private List<Rent> createRentListForVehicleId(List<Rent> list, int id) {
-        List<Rent> newList = new ArrayList<>();
-        for (Rent r : list) {
-            if (r.getVehicleId() == id) {
-                newList.add(r);
-            }
-        }
-        return newList;
     }
 
     private boolean isIndex(int index) {
