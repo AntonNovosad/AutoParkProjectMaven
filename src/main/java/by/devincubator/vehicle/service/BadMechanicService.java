@@ -1,6 +1,6 @@
-package by.devincubator.service;
+package by.devincubator.vehicle.service;
 
-import by.devincubator.vehicle.Vehicle;
+import by.devincubator.entity.Vehicles;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,17 +11,17 @@ public class BadMechanicService implements Fixer {
     }
 
     @Override
-    public Map<String, Integer> detectBreaking(Vehicle vehicle) {
+    public Map<String, Integer> detectBreaking(Vehicles vehicle) {
         return new HashMap<>();
     }
 
     @Override
-    public void repair(Vehicle vehicle) {
+    public void repair(Vehicles vehicle) {
 
     }
 
     @Override
-    public boolean isBroken(Vehicle vehicle) {
+    public boolean isBroken(Vehicles vehicle) {
         return false;
     }
 }

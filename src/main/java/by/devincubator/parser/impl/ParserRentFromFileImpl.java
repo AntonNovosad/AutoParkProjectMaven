@@ -1,36 +1,39 @@
-package by.devincubator.parser;
+package by.devincubator.parser.impl;
 
+import by.devincubator.entity.Rents;
 import by.devincubator.infrastructure.core.annotations.InitMethod;
+import by.devincubator.parser.ParserRentFromFile;
 import by.devincubator.parser.utils.StringUtils;
 import by.devincubator.utils.ReadFile;
-import by.devincubator.vehicle.Rent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParseRentFromFile {
+public class ParserRentFromFileImpl implements ParserRentFromFile {
     private static final String RENTS_PATH = "./src/main/resources/data/rents.csv";
+    private static Long id = 1l;
 
-    public ParseRentFromFile() {
+    public ParserRentFromFileImpl() {
     }
 
     @InitMethod
-    public void init(){
+    public void init() {
     }
 
-    public List<Rent> loadRents() {
+    public List<Rents> loadRents() {
         List<String> list = ReadFile.readFile(RENTS_PATH);
-        List<Rent> listRent = new ArrayList<>();
+        List<Rents> listRent = new ArrayList<>();
         for (String s : list) {
             listRent.add(createRent(s));
         }
         return listRent;
     }
 
-    private Rent createRent(String csvString) {
-        Rent rent = new Rent();
+    private Rents createRent(String csvString) {
+        Rents rent = new Rents();
         String[] array = StringUtils.createArrayString(csvString);
-        rent.setVehicleId(Integer.parseInt(array[0]));
+        rent.setId(id++);
+        rent.setVehicleId(Long.parseLong(array[0]));
         rent.setDate(StringUtils.createDate(array[1]));
         rent.setPrice(Double.parseDouble(array[array.length - 1]));
         return rent;

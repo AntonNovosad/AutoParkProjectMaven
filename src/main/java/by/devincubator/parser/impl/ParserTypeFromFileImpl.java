@@ -1,38 +1,39 @@
-package by.devincubator.parser;
+package by.devincubator.parser.impl;
 
+import by.devincubator.entity.Types;
 import by.devincubator.infrastructure.core.annotations.InitMethod;
+import by.devincubator.parser.ParserTypeFromFile;
 import by.devincubator.parser.utils.StringUtils;
 import by.devincubator.utils.ReadFile;
-import by.devincubator.vehicle.VehicleType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParseTypeFromFile {
+public class ParserTypeFromFileImpl implements ParserTypeFromFile {
     private static final String TYPES_PATH = "./src/main/resources/data/types.csv";
 
-    public ParseTypeFromFile() {
+    public ParserTypeFromFileImpl() {
     }
 
     @InitMethod
     public void init(){
     }
 
-    public List<VehicleType> loadTypes() {
+    public List<Types> loadTypes() {
         List<String> list = ReadFile.readFile(TYPES_PATH);
-        List<VehicleType> listVehicleType = new ArrayList<>();
+        List<Types> listVehicleType = new ArrayList<>();
         for (String s : list) {
             listVehicleType.add(createType(s));
         }
         return listVehicleType;
     }
 
-    private VehicleType createType(String csvString) {
-        VehicleType vehicleType = new VehicleType();
+    private Types createType(String csvString) {
+        Types vehicleType = new Types();
         String[] array = StringUtils.createArrayString(csvString);
-        vehicleType.setId(Integer.parseInt(array[0]));
+        vehicleType.setId(Long.parseLong(array[0]));
         vehicleType.setName(array[1]);
-        vehicleType.setTaxCoefficient(Double.parseDouble(array[2]));
+        vehicleType.setCoefTaxes(Double.parseDouble(array[2]));
         return vehicleType;
     }
 }

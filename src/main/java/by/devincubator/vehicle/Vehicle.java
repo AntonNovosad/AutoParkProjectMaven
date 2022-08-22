@@ -1,6 +1,6 @@
 package by.devincubator.vehicle;
 
-import by.devincubator.service.TechnicalSpecialist;
+import by.devincubator.vehicle.service.TechnicalSpecialist;
 import by.devincubator.vehicle.engine.Startable;
 import by.devincubator.exception.NotVehicleException;
 

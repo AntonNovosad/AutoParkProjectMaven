@@ -1,4 +1,4 @@
-package by.devincubator.service;
+package by.devincubator.vehicle.service;
 
 import by.devincubator.vehicle.Color;
 import by.devincubator.vehicle.VehicleType;
