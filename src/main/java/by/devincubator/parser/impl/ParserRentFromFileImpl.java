@@ -34,7 +34,7 @@ public class ParserRentFromFileImpl implements ParserRentFromFile {
         String[] array = StringUtils.createArrayString(csvString);
         rent.setId(id++);
         rent.setVehicleId(Long.parseLong(array[0]));
-        rent.setDate(StringUtils.createDate(array[1]));
+        rent.setDate("'" + StringUtils.createDate(array[1]).toString() + "'");
         rent.setPrice(Double.parseDouble(array[array.length - 1]));
         return rent;
     }

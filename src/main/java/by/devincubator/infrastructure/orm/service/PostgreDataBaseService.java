@@ -45,8 +45,7 @@ public class PostgreDataBaseService {
                     "    %s\n);";
     private static final String INSERT_SQL_PATTERN =
             "INSERT INTO %s(%s)\n" +
-                    "    VALUES (%s)\n" +
-                    "    RETURNING %s ;";
+                    "    VALUES (%s);";
 
     @Autowired
     private ConnectionFactory connectionFactory;
@@ -82,9 +81,10 @@ public class PostgreDataBaseService {
         Object[] values = getValues(obj);
         String sql = String.format(insertByClassPattern.get(obj.getClass().getName()), values);
 
-        try (Connection connection = connectionFactory.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+        try {
+            Connection connection = connectionFactory.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
             id = resultSet.getLong(idFieldName);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,7 +103,7 @@ public class PostgreDataBaseService {
         checkTableAnnotation(clazz);
         String sql = "SELECT * FROM " + clazz.getAnnotation(Table.class).name()
                 + " WHERE " + getFieldID(clazz.getDeclaredFields()).getAnnotation(ID.class).name()
-                + " = " + id;
+                + " = " + id + ";";
 
         try (Connection connection = connectionFactory.getConnection();
              Statement statement = connection.createStatement();
@@ -119,7 +119,7 @@ public class PostgreDataBaseService {
     public <T> List<T> getAll(Class<T> clazz) {
         List<T> list = new ArrayList<>();
         checkTableAnnotation(clazz);
-        String sql = "SELECT * FROM " + clazz.getAnnotation(Table.class).name();
+        String sql = "SELECT * FROM " + clazz.getAnnotation(Table.class).name() + ";";
 
         try {
             Connection connection = connectionFactory.getConnection();
@@ -317,31 +317,41 @@ public class PostgreDataBaseService {
         T obj = clazz.getConstructor().newInstance();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(ID.class)) {
-                String idName = field.getAnnotation(ID.class).name();
-                method = getMethodForType(field.getType());
-                setField(field, obj, method.invoke(resultSet, idName));
+                String setterName = createSetterString(field);
+                method = obj.getClass().getMethod(setterName, field.getType());
+                getMethodForType(method, field, obj, resultSet);
             }
             if (field.isAnnotationPresent(Column.class)) {
-                String columnName = field.getAnnotation(Column.class).name();
-                method = getMethodForType(field.getType());
-                setField(field, obj, method.invoke(resultSet, columnName));
+                String setterName = createSetterString(field);
+                method = obj.getClass().getMethod(setterName, field.getType());
+                getMethodForType(method, field, obj, resultSet);
+            }
+        }
+        for (Method m : clazz.getMethods()) {
+            if (m.isAnnotationPresent(InitMethod.class)) {
+                m.invoke(obj);
             }
         }
         return obj;
     }
 
-    @SneakyThrows
-    private Method getMethodForType(Class<?> type) {
-        if (type.equals(Integer.class)) {
-            return ResultSet.class.getMethod("getInt", String.class);
-        } else {
-            return ResultSet.class.getMethod("get" + type.getSimpleName(), String.class);
-        }
+    private String createSetterString(Field field) {
+        String fieldName = field.getName();
+        return "set" + String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1);
     }
 
     @SneakyThrows
-    private <T> void setField(Field field, T obj, Object value) {
-        field.setAccessible(true);
-        field.set(obj, value);
+    private void getMethodForType(Method setterMethod, Field field, Object object, ResultSet resultSet) {
+        if (field.getType() == String.class) {
+            setterMethod.invoke(object, resultSet.getString(field.getName()));
+        } else if (field.getType() == Integer.class) {
+            setterMethod.invoke(object, resultSet.getInt(field.getName()));
+        } else if (field.getType() == Long.class) {
+            setterMethod.invoke(object, resultSet.getLong(field.getName()));
+        } else if (field.getType() == Double.class) {
+            setterMethod.invoke(object, resultSet.getDouble(field.getName()));
+        } else if (field.getType() == Date.class) {
+            setterMethod.invoke(object, resultSet.getDate(field.getName()));
+        }
     }
 }

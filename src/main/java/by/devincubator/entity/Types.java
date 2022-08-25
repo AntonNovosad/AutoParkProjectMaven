@@ -12,13 +12,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Types {
-
     @ID
     private Long id;
-
     @Column(name = "name", unique = true)
     private String name;
-
     @Column(name = "coefTaxes")
     private Double coefTaxes;
 }

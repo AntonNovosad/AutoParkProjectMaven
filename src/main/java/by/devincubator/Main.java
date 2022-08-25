@@ -2,8 +2,6 @@ package by.devincubator;
 
 import by.devincubator.entity.Vehicles;
 import by.devincubator.infrastructure.core.impl.ApplicationContext;
-import by.devincubator.parser.ParserVehicleInterface;
-import by.devincubator.parser.impl.ParserVehicleFromDB;
 import by.devincubator.vehicle.collection.VehicleCollection;
 import by.devincubator.vehicle.service.Fixer;
 import by.devincubator.vehicle.service.MechanicService;
@@ -22,9 +20,13 @@ public class Main {
         VehicleCollection vehicleCollection = applicationContext.getObject(VehicleCollection.class);
         Workroom workroom = applicationContext.getObject(Workroom.class);
 
-        vehicleCollection.getVehicleList().forEach(vehicles -> System.out.println(vehicles.getRentList()));
+        vehicleCollection.saveVehiclesFromFile();
+        vehicleCollection.saveTypesFromFile();
+        vehicleCollection.saveRentsFromFile();
 
-        List<Vehicles> vehicleList = vehicleCollection.getVehicleList();
+        vehicleCollection.getListRentsFromDB().forEach(System.out::println);
+
+        List<Vehicles> vehicleList = vehicleCollection.getListVehicleFromDB();
         workroom.checkAllVehicle(vehicleList);
     }
 }

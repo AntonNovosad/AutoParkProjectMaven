@@ -82,8 +82,7 @@ public class MechanicService implements Fixer {
 
     public void showVehicleWithoutBrokenDetails(List<Vehicles> listVehicle) {
         System.out.println("Vehicle without broken details:");
-        listVehicle
-                .stream()
+        listVehicle.stream()
                 .filter(vehicle -> !isBroken(vehicle))
                 .forEach(System.out::println);
     }

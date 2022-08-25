@@ -32,7 +32,7 @@ public class ParserTypeFromFileImpl implements ParserTypeFromFile {
         Types vehicleType = new Types();
         String[] array = StringUtils.createArrayString(csvString);
         vehicleType.setId(Long.parseLong(array[0]));
-        vehicleType.setName(array[1]);
+        vehicleType.setName("'" + array[1] + "'");
         vehicleType.setCoefTaxes(Double.parseDouble(array[2]));
         return vehicleType;
     }

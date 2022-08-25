@@ -12,16 +12,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Orders {
-
     @ID
     private Long id;
-
-    @Column(name = "vehicle_id")
+    @Column(name = "vehicleId")
     private Long vehiclesId;
-
     @Column(name = "defect")
     private String defect;
-
     @Column(name = "breakingAmount")
     private String breakingAmount;
 }

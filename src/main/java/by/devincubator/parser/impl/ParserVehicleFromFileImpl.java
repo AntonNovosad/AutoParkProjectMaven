@@ -10,7 +10,6 @@ import by.devincubator.parser.ParserTypeFromFile;
 import by.devincubator.parser.ParserVehicleFromFile;
 import by.devincubator.parser.utils.StringUtils;
 import by.devincubator.utils.ReadFile;
-import by.devincubator.vehicle.Color;
 import by.devincubator.vehicle.engine.AbstractEngine;
 import by.devincubator.vehicle.engine.DieselEngine;
 import by.devincubator.vehicle.engine.ElectricalEngine;
@@ -64,7 +63,7 @@ public class ParserVehicleFromFileImpl implements ParserVehicleFromFile {
         this.technicalSpecialist = technicalSpecialist;
     }
 
-    private List<Vehicles> loadVehicles() {
+    public List<Vehicles> loadVehicles() {
         List<String> list = ReadFile.readFile(VEHICLES_PATH);
         List<Vehicles> listVehicle = new ArrayList<>();
         for (String s : list) {
@@ -78,12 +77,12 @@ public class ParserVehicleFromFileImpl implements ParserVehicleFromFile {
         String[] array = StringUtils.createArrayString(csvString);
         vehicle.setId(Long.parseLong(array[0]));
         vehicle.setTypeId(vehicleTypeList.get(Integer.parseInt(array[1]) - 1).getId());
-        vehicle.setModelName(array[2]);
-        vehicle.setRegistrationNumber(array[3]);
+        vehicle.setModelName("'" + array[2] + "'");
+        vehicle.setRegistrationNumber("'" + array[3] + "'");
         vehicle.setWeightKg(Double.parseDouble(array[4]));
         vehicle.setManufactureYear(Integer.parseInt(array[5]));
         vehicle.setMileage(Integer.parseInt(array[6]));
-        vehicle.setColor(Color.valueOf(array[7].toUpperCase()).toString());
+        vehicle.setColor("'" + array[7].toUpperCase() + "'");
         vehicle.setEngine(
                 createEngine(
                         array[8],

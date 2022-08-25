@@ -9,6 +9,7 @@ import java.util.List;
 public interface ParserVehicleFromFile {
     List<Vehicles> getVehicleList();
     List<Types> getVehicleTypeList();
+    List<Vehicles> loadVehicles();
     void setParseRent(ParserRentFromFile parseRent);
     void setTechnicalSpecialist(TechnicalSpecialist technicalSpecialist);
 }
