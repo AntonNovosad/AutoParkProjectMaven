@@ -1,10 +1,10 @@
-package by.devincubator.service;
+package by.devincubator.vehicle.service;
 
+import by.devincubator.entity.Vehicles;
 import by.devincubator.infrastructure.core.annotations.Autowired;
-import by.devincubator.parser.ParserBreakingFromFile;
+import by.devincubator.parser.ParserBreakingsFromFile;
 import by.devincubator.utils.ReadFile;
 import by.devincubator.utils.WriteFile;
-import by.devincubator.vehicle.Vehicle;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,14 +19,14 @@ public class MechanicService implements Fixer {
     private static final String REGEX = ".+";
     private static String[] details = {"Фильтр", "Втулка", "Вал", "Ось", "Свечка", "Масло", "ГРМ", "ШРУС"};
     @Autowired
-    private ParserBreakingFromFile parser;
+    private ParserBreakingsFromFile parser;
 
-    public void setParser(ParserBreakingFromFile parser) {
+    public void setParser(ParserBreakingsFromFile parser) {
         this.parser = parser;
     }
 
     @Override
-    public Map<String, Integer> detectBreaking(Vehicle vehicle) {
+    public Map<String, Integer> detectBreaking(Vehicles vehicle) {
         Map<String, Integer> map = new HashMap<>();
         fillMap(map);
         if (!map.isEmpty()) {
@@ -37,7 +37,7 @@ public class MechanicService implements Fixer {
     }
 
     @Override
-    public void repair(Vehicle vehicle) {
+    public void repair(Vehicles vehicle) {
         List<String> list = parser.loadOrderList();
         if (isBroken(vehicle)) {
             list.removeIf(i -> i.matches(vehicle.getId() + REGEX));
@@ -46,7 +46,7 @@ public class MechanicService implements Fixer {
     }
 
     @Override
-    public boolean isBroken(Vehicle vehicle) {
+    public boolean isBroken(Vehicles vehicle) {
         List<String> list = parser.loadOrderList();
         for (String str : list) {
             if (str.matches(vehicle.getId() + REGEX)) {
@@ -67,7 +67,7 @@ public class MechanicService implements Fixer {
         }
     }
 
-    private String createStringFromMap(Map<String, Integer> map, Vehicle vehicle) {
+    private String createStringFromMap(Map<String, Integer> map, Vehicles vehicle) {
         String line = String.valueOf(vehicle.getId());
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
             line = line + "," + entry.getKey() + "," + entry.getValue();
@@ -80,15 +80,14 @@ public class MechanicService implements Fixer {
         return (int) (Math.random() * ((max - min) + 1) + min);
     }
 
-    public void showVehicleWithoutBrokenDetails(List<Vehicle> listVehicle) {
+    public void showVehicleWithoutBrokenDetails(List<Vehicles> listVehicle) {
         System.out.println("Vehicle without broken details:");
-        listVehicle
-                .stream()
+        listVehicle.stream()
                 .filter(vehicle -> !isBroken(vehicle))
                 .forEach(System.out::println);
     }
 
-    public void showVehicleWithMaxBrokenDetails(List<Vehicle> listVehicle) {
+    public void showVehicleWithMaxBrokenDetails(List<Vehicles> listVehicle) {
         List<String> list = parser.loadOrderList();
         int max = findMaxNumberBrokenDetails();
         System.out.println("Vehicle with max broken details:");
@@ -124,7 +123,7 @@ public class MechanicService implements Fixer {
         return numberOfDetail;
     }
 
-    public static int getDefectCount(Vehicle vehicle) {
+    public static int getDefectCount(Vehicles vehicle) {
         List<String> list = ReadFile.readFile(PATH_ORDERS_FILE);
         int numberOfDetail = 0;
         for (String str : list) {

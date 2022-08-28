@@ -1,7 +1,7 @@
-package by.devincubator.service;
+package by.devincubator.vehicle.service;
 
+import by.devincubator.entity.Vehicles;
 import by.devincubator.infrastructure.core.annotations.Autowired;
-import by.devincubator.vehicle.Vehicle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +21,13 @@ public class Workroom {
         this.mechanic = mechanic;
     }
 
-    public void checkAllVehicle(List<Vehicle> vehicles) {
-        List<Vehicle> vehicleList = new ArrayList<>();
+    public void checkAllVehicle(List<Vehicles> vehicles) {
+        List<Vehicles> vehicleList = new ArrayList<>();
         vehicles.stream().forEach(vehicle -> checkBrokenVehicle(vehicle, vehicleList));
         System.out.println("Cars are not broken: " + vehicleList);
     }
 
-    private void checkBrokenVehicle(Vehicle vehicle, List<Vehicle> vehicleList) {
+    private void checkBrokenVehicle(Vehicles vehicle, List<Vehicles> vehicleList) {
         if (mechanic.isBroken(vehicle)) {
             System.out.println("Car " + vehicle.getId() + " broken.");
         } else {

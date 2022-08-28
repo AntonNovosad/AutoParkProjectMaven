@@ -1,138 +1,101 @@
 package by.devincubator.vehicle.collection;
 
+import by.devincubator.entity.Rents;
+import by.devincubator.entity.Types;
+import by.devincubator.entity.Vehicles;
 import by.devincubator.infrastructure.core.annotations.Autowired;
 import by.devincubator.infrastructure.core.annotations.InitMethod;
+import by.devincubator.parser.ParserRentFromFile;
+import by.devincubator.parser.ParserTypeFromFile;
 import by.devincubator.parser.ParserVehicleFromFile;
-import by.devincubator.service.MechanicService;
-import by.devincubator.vehicle.Column;
-import by.devincubator.vehicle.Vehicle;
-import by.devincubator.vehicle.VehicleType;
-import by.devincubator.vehicle.comparator.ComparatorByDefectCount;
-import by.devincubator.vehicle.comparator.ComparatorByTaxPerMonth;
+import by.devincubator.parser.ParserVehicleInterface;
+import by.devincubator.service.OrdersService;
+import by.devincubator.service.RentsService;
+import by.devincubator.service.TypesService;
+import by.devincubator.service.VehiclesService;
+import by.devincubator.vehicle.service.MechanicService;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 public class VehicleCollection {
-    private List<VehicleType> vehicleTypes = new ArrayList<>();
-    private List<Vehicle> vehicleList = new ArrayList<>();
+    private List<Types> vehicleTypes = new ArrayList<>();
+    private List<Vehicles> vehicleList = new ArrayList<>();
+    private List<Rents> rentList = new ArrayList<>();
     @Autowired
-    private ParserVehicleFromFile parser;
+    private ParserVehicleInterface parser;
+    @Autowired
+    private ParserVehicleFromFile parserVehicleFromFile;
+    @Autowired
+    private ParserRentFromFile parserRentFromFile;
+    @Autowired
+    private ParserTypeFromFile parserTypeFromFile;
+    @Autowired
+    private OrdersService ordersService;
+    @Autowired
+    private RentsService rentsService;
+    @Autowired
+    private TypesService typesService;
+    @Autowired
+    private VehiclesService vehiclesService;
 
     public VehicleCollection() {
     }
 
     @InitMethod
     public void init() {
-        vehicleTypes = parser.getVehicleTypeList();
-        vehicleList = parser.getVehicleList();
+        vehicleList = parserVehicleFromFile.loadVehicles();
+        rentList = parserRentFromFile.loadRents();
+        vehicleTypes = parserTypeFromFile.loadTypes();
     }
 
-    public List<VehicleType> getVehicleTypes() {
-        return vehicleTypes;
+    public void saveVehiclesFromFile() {
+        for (Vehicles vehicles : vehicleList) {
+            vehiclesService.save(vehicles);
+        }
     }
 
-    public void setVehicleTypes(List<VehicleType> vehicleTypes) {
-        this.vehicleTypes = vehicleTypes;
+    public void saveTypesFromFile() {
+        for (Types types : vehicleTypes) {
+            typesService.save(types);
+        }
     }
 
-    public void setVehicleList(List<Vehicle> vehicleList) {
-        this.vehicleList = vehicleList;
+    public void saveRentsFromFile() {
+        for (Rents rents : rentList) {
+            rentsService.save(rents);
+        }
     }
 
-    public ParserVehicleFromFile getParser() {
-        return parser;
+    public List<Vehicles> getListVehicleFromDB() {
+        return parser.loadVehicles();
     }
 
-    public void setParser(ParserVehicleFromFile parser) {
-        this.parser = parser;
+    public List<Types> getListTypesFromDB() {
+        return parser.loadTypes();
     }
 
-    public List<Vehicle> getListBrokenVehicle(MechanicService mechanicService) {
-        return vehicleList
-                .stream()
+    public List<Rents> getListRentsFromDB() {
+        return parser.loadRents();
+    }
+
+    public List<Vehicles> getListBrokenVehicle(MechanicService mechanicService) {
+        return vehicleList.stream()
                 .filter(x -> !mechanicService.detectBreaking(x).isEmpty())
                 .collect(Collectors.toList());
     }
 
-    public List<Vehicle> getListCountBrokenVehicle(List<Vehicle> vehicleList) {
-        return vehicleList
-                .stream()
-                .sorted(new ComparatorByDefectCount())
-                .collect(Collectors.toList());
-    }
-
-    public Optional<Vehicle> getVehicleWithMaxTas() {
-        return Optional.of(vehicleList
-                .stream()
-                .max(new ComparatorByTaxPerMonth())
-                .get());
-    }
-
-    public void insert(int index, Vehicle v) {
+    public void insert(int index, Vehicles v) {
         if (isIndex(index)) {
             vehicleList.add(index, v);
         } else {
             vehicleList.add(v);
         }
-    }
-
-    public List<Vehicle> getVehicleList() {
-        return vehicleList;
-    }
-
-    public int delete(int index) {
-        if (isIndex(index)) {
-            vehicleList.remove(index);
-            return index;
-        } else {
-            return -1;
-        }
-    }
-
-    public double sumTotalProfit() {
-        double totalProfit = 0;
-        for (Vehicle v : vehicleList) {
-            totalProfit += v.getTotalProfit();
-        }
-        return totalProfit;
-    }
-
-    public void sort(Comparator<Vehicle> comparator) {
-        vehicleList.sort(comparator);
-    }
-
-    public void display() {
-        System.out.printf("%s\t%7s\t%20s\t%10s\t%s\t%s\t%6s\t%6s\t%s\t%5s\t%s\n",
-                Column.ID.getName(),
-                Column.TYPE.getName(),
-                Column.MODEL_NAME.getName(),
-                Column.NUMBER.getName(),
-                Column.WEIGHT.getName(),
-                Column.YEAR.getName(),
-                Column.MILEAGE.getName(),
-                Column.COLOR.getName(),
-                Column.INCOME.getName(),
-                Column.TAX.getName(),
-                Column.PROFIT.getName());
-        for (Vehicle v : vehicleList) {
-            System.out.printf("%d\t%7s\t%20s\t%10s\t%d\t%8d\t%6d\t%6s\t%.2f\t%.2f\t%.2f\n",
-                    v.getId(),
-                    v.getType().getName(),
-                    v.getModelName(),
-                    v.getRegistrationNumber(),
-                    v.getWeightKg(),
-                    v.getManufactureYear(),
-                    v.getMileage(),
-                    v.getColor(),
-                    v.getTotalIncome(),
-                    v.getCalcTaxPerMonth(),
-                    v.getTotalProfit());
-        }
-        System.out.printf(Column.TOTAL.getName() + ": %.2f\n", sumTotalProfit());
     }
 
     private boolean isIndex(int index) {
