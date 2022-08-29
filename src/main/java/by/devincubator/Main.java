@@ -1,6 +1,5 @@
 package by.devincubator;
 
-import by.devincubator.entity.Vehicles;
 import by.devincubator.infrastructure.core.impl.ApplicationContext;
 import by.devincubator.vehicle.collection.VehicleCollection;
 import by.devincubator.vehicle.service.Fixer;
@@ -8,7 +7,6 @@ import by.devincubator.vehicle.service.MechanicService;
 import by.devincubator.vehicle.service.Workroom;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -20,13 +18,13 @@ public class Main {
         VehicleCollection vehicleCollection = applicationContext.getObject(VehicleCollection.class);
         Workroom workroom = applicationContext.getObject(Workroom.class);
 
-        vehicleCollection.saveVehiclesFromFile();
-        vehicleCollection.saveTypesFromFile();
-        vehicleCollection.saveRentsFromFile();
+        CheckThread checkThread = applicationContext.getObject(CheckThread.class);
+        checkThread.getVehicleFromDBToWorkroom(applicationContext);
 
-        vehicleCollection.getListRentsFromDB().forEach(System.out::println);
-
-        List<Vehicles> vehicleList = vehicleCollection.getListVehicleFromDB();
-        workroom.checkAllVehicle(vehicleList);
+        try {
+            Thread.sleep(120000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
