@@ -1,7 +1,7 @@
 package by.devincubator.servlets;
 
 import by.devincubator.infrastructure.core.impl.ApplicationContext;
-import by.devincubator.service.VehiclesService;
+import by.devincubator.service.VehicleTypeService;
 import by.devincubator.vehicle.service.Fixer;
 import by.devincubator.vehicle.service.MechanicService;
 
@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet("/viewDiagnostic")
-public class viewDiagnosticServlet extends HttpServlet {
-    private  VehicleTypeService vehicleTypeService;
+public class ViewDiagnosticServlet extends HttpServlet {
+    private VehicleTypeService vehicleTypeService;
 
     @Override
     public void init() throws ServletException {

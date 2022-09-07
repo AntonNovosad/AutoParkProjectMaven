@@ -3,10 +3,7 @@ package by.devincubator.entity;
 import by.devincubator.infrastructure.orm.annotations.Column;
 import by.devincubator.infrastructure.orm.annotations.ID;
 import by.devincubator.infrastructure.orm.annotations.Table;
-import by.devincubator.vehicle.engine.Startable;
 import lombok.*;
-
-import java.util.List;
 
 @Table(name = "vehicles")
 @Builder
@@ -31,6 +28,12 @@ public class Vehicles {
     private Integer mileage;
     @Column(name = "color")
     private String color;
-    private Startable engine;
-    private List<Rents> rentList;
+    @Column(name = "engineName")
+    private String engineName;
+    @Column(name = "engineCapacity")
+    private Double engineCapacity;
+    @Column(name = "fuelTankCapacity")
+    private Double fuelTankCapacity;
+    @Column(name = "fuelConsumptionPer100")
+    private Double fuelConsumptionPer100;
 }

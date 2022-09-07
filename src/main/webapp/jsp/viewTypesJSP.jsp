@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Comparator" %>
+<%@ page import="by.devincubator.dto.VehicleTypeDto" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -59,7 +60,7 @@
                 if (comparator != null) {
                     dtoList.sort(comparator);
                 }
-                for (VehiicleTypeDto dto : dtoList) {
+                for (VehicleTypeDto dto : dtoList) {
             %>
             <tr>
                 <td><%=dto.getName()%>
@@ -72,7 +73,7 @@
         <%if (dtoList.size() > 0) {%>
         <p>
             Минимальный коэффициент:
-            <strong><%=dtoList.stream().map(VehicleTypeDto::getTaxCoefficoent).min(Double::compare).get()%>
+            <strong><%=dtoList.stream().map(VehicleTypeDto::getTaxCoefficient).min(Double::compare).get()%>
             </strong>
         </p>
         <%}%>

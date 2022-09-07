@@ -21,6 +21,9 @@ public class MechanicService implements Fixer {
     @Autowired
     private ParserBreakingsFromFile parser;
 
+    public MechanicService() {
+    }
+
     public void setParser(ParserBreakingsFromFile parser) {
         this.parser = parser;
     }

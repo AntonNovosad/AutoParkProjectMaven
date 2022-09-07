@@ -1,12 +1,11 @@
 package by.devincubator.servlets;
 
 import by.devincubator.infrastructure.core.impl.ApplicationContext;
-import by.devincubator.service.VehiclesService;
+import by.devincubator.service.VehicleTypeService;
 import by.devincubator.vehicle.service.Fixer;
 import by.devincubator.vehicle.service.MechanicService;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

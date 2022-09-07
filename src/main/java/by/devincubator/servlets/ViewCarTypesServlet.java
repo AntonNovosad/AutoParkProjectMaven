@@ -1,7 +1,7 @@
 package by.devincubator.servlets;
 
 import by.devincubator.infrastructure.core.impl.ApplicationContext;
-import by.devincubator.service.TypesService;
+import by.devincubator.service.VehicleTypeService;
 import by.devincubator.vehicle.service.Fixer;
 import by.devincubator.vehicle.service.MechanicService;
 

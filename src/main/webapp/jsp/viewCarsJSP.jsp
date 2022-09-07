@@ -4,6 +4,7 @@
 <%@ page import="java.util.concurrent.atomic.AtomicReference" %>
 <%@ page import="java.util.function.Predicate" %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="by.devincubator.dto.VehicleDto" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -88,7 +89,7 @@
                 </td>
                 <td><%=dto.getMileage()%>
                 </td>
-                <td><%=dto.getTankVolue()%>
+                <td><%=dto.getTankVolume()%>
                 </td>
                 <td><a href="<%="/info?id" + dto.getId()%>">&#x1F4C3;</a></td>
             </tr>

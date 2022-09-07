@@ -49,9 +49,9 @@ public class VehicleCollection {
 
     @InitMethod
     public void init() {
-        vehicleList = parserVehicleFromFile.loadVehicles();
-        rentList = parserRentFromFile.loadRents();
-        vehicleTypes = parserTypeFromFile.loadTypes();
+        vehicleTypes = parser.loadTypes();
+        rentList = parser.loadRents();
+        vehicleList = parser.loadVehicles();
     }
 
     public void saveVehiclesFromFile() {
