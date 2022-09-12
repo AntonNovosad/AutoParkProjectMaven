@@ -4,7 +4,6 @@ import by.devincubator.entity.Rents;
 import by.devincubator.entity.Types;
 import by.devincubator.entity.Vehicles;
 import by.devincubator.infrastructure.core.annotations.Autowired;
-import by.devincubator.infrastructure.core.annotations.InitMethod;
 import by.devincubator.parser.ParserRentFromFile;
 import by.devincubator.parser.ParserTypeFromFile;
 import by.devincubator.parser.ParserVehicleFromFile;
@@ -36,7 +35,6 @@ public class ParserVehicleFromFileImpl implements ParserVehicleFromFile {
     public ParserVehicleFromFileImpl() {
     }
 
-    @InitMethod
     public void init() {
         vehicleTypeList = parseType.loadTypes();
         rentList = parseRent.loadRents();
@@ -83,18 +81,12 @@ public class ParserVehicleFromFileImpl implements ParserVehicleFromFile {
         vehicle.setManufactureYear(Integer.parseInt(array[5]));
         vehicle.setMileage(Integer.parseInt(array[6]));
         vehicle.setColor("'" + array[7].toUpperCase() + "'");
-        vehicle.setEngine(
-                createEngine(
-                        array[8],
-                        Double.parseDouble(array[9]),
-                        Double.parseDouble(array[10]),
-                        Double.parseDouble(array[array.length - 1])
-                )
-        );
-        vehicle.setRentList(createRentListForVehicleId(rentList, vehicle.getId()));
+        vehicle.setEngineName("'" + array[8] + "'");
+        vehicle.setEngineCapacity(Double.parseDouble(array[9]));
+        vehicle.setFuelTankCapacity(Double.parseDouble(array[10]));
+        vehicle.setFuelConsumptionPer100(Double.parseDouble(array[array.length - 1]));
         return vehicle;
     }
-
 
     private AbstractEngine createEngine(String name, double engineCapacity, double fuel100, double fuelTank) {
         if (name.equals(GASOLINE_ENGINE)) {

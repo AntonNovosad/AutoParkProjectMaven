@@ -1,8 +1,7 @@
 package by.devincubator.servlets;
 
 import by.devincubator.infrastructure.core.impl.ApplicationContext;
-import by.devincubator.service.RentsService;
-import by.devincubator.service.VehiclesService;
+import by.devincubator.service.VehicleTypeService;
 import by.devincubator.vehicle.service.Fixer;
 import by.devincubator.vehicle.service.MechanicService;
 
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 
 @WebServlet("/info")
 public class ViewInfoServlet extends HttpServlet {
-    private  VehicleTypeService vehicleTypeService;
+    private VehicleTypeService vehicleTypeService;
 
     @Override
     public void init() throws ServletException {

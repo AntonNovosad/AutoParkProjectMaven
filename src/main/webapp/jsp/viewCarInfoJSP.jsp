@@ -1,4 +1,6 @@
 <%@ page import="java.util.List" %>
+<%@ page import="by.devincubator.dto.VehicleDto" %>
+<%@ page import="by.devincubator.dto.RentDto" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,6 +35,7 @@
             </tr>
             <%
                 List<VehicleDto> dtoList = (List<VehicleDto>) request.getAttribute("cars");
+                int id = Integer.parseInt(request.getParameter("id"));
                 VehicleDto vehicleDto = dtoList.get(id);
             %>
             <tr>
@@ -76,7 +79,7 @@
             </tr>
             <%
                 List<RentDto> rentDtoList = (List<RentDto>) request.getAttribute("rents");
-                double profit = (vehicleDto.getWeight() * 0.0013) + (vehicleDto.getTaxCoefficient() * vehicleDto.getTaxPerMonth() * 30) + 5;
+                double profit = vehicleDto.getIncome() - vehicleDto.getTax();
                 for (RentDto rentDto : rentDtoList) {
             %>
             <tr>

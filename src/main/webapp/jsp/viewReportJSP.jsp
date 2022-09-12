@@ -1,3 +1,5 @@
+<%@ page import="by.devincubator.dto.VehicleDto" %>
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,10 +37,10 @@
                 <th>Итог</th>
             </tr>
             <%
-                for (VehicleDto vehiclesDto : dtoList) {
-                    double profit = (vehicleDto.getWeight() * 0.0013) + (vehicleDto.getTaxCoefficient() * vehicleDto.getTaxPerMonth() * 30) + 5;
-                    sumTax += vehiclesDto.getTax();
-                    sumIncome += vehiclesDto.getIncome();
+                for (VehicleDto vehicleDto : dtoList) {
+                    sumTax += vehicleDto.getTax();
+                    sumIncome += vehicleDto.getIncome();
+                    double profit = vehicleDto.getIncome() - vehicleDto.getTax();
                     sumProfit += profit;
             %>
             <tr>

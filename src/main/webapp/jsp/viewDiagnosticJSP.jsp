@@ -1,4 +1,5 @@
 <%@ page import="java.util.List" %>
+<%@ page import="by.devincubator.dto.VehicleDto" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -60,7 +61,7 @@
                 </td>
                 <td><%=vehicleDto.getMileage()%>
                 </td>
-                <td><%=vehicleDto.getTankVolue()%>
+                <td><%=vehicleDto.getTankVolume()%>
                 </td>
                 <td><%=isWork%>
                 </td>

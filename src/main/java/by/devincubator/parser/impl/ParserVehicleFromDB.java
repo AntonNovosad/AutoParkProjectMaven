@@ -21,6 +21,9 @@ public class ParserVehicleFromDB implements ParserVehicleInterface {
     @Autowired
     private RentsService rentsService;
 
+    public ParserVehicleFromDB() {
+    }
+
     public List<Types> loadTypes() {
         return typesService.getAll();
     }
